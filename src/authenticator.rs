@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-use hmacsha1::hmac_sha1;
+use hmac_sha1::hmac_sha1;
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::{error, fmt, result};
@@ -265,7 +265,7 @@ impl GoogleAuthenticator {
         let scheme = Self::create_scheme(name, secret, title);
         let scheme = utf8_percent_encode(&scheme, NON_ALPHANUMERIC);
         format!(
-            "https://chart.googleapis.com/chart?chs={}x{}&chld={}|0&cht=qr&chl={}",
+            "https://www.google.com/chart?chs={}x{}&chld={}|0&cht=qr&chl={}",
             width, height, level, scheme
         )
     }
@@ -311,14 +311,14 @@ impl GoogleAuthenticator {
     }
 
     /// Creates a totp url.
-    fn create_scheme(name: &str, secret: &str, title: &str) -> String {
+    pub fn create_scheme(name: &str, secret: &str, title: &str) -> String {
         let name = utf8_percent_encode(name, NON_ALPHANUMERIC);
         let title = utf8_percent_encode(title, NON_ALPHANUMERIC);
         format!("otpauth://totp/{}?secret={}&issuer={}", name, secret, title)
     }
 
     fn base32_decode(secret: &str) -> Result<Vec<u8>> {
-        match base32::decode(base32::Alphabet::RFC4648 { padding: true }, secret) {
+        match base32::decode(base32::Alphabet::Rfc4648 { padding: true }, secret) {
             Some(_decode_str) => Ok(_decode_str),
             _ => Err(GAError::Error("secret must be base32 decodeable.")),
         }
